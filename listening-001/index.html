@@ -1,2 +1,733 @@
 <!doctype html>
 <html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IELTS Listening Practice 001</title>
+  <style>
+    :root {
+      --ink: #162027;
+      --muted: #60707b;
+      --line: #d8e0e6;
+      --paper: #f5f1e8;
+      --panel: #ffffff;
+      --accent: #0b6e69;
+      --accent-dark: #103b3a;
+      --mark: #b5422f;
+      --good: #177245;
+      --bad: #b3261e;
+      --shadow: 0 14px 34px rgba(22, 32, 39, .1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(245, 241, 232, .96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .timer {
+      min-width: 105px;
+      text-align: center;
+      font-weight: 800;
+      color: var(--mark);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .tabs {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 18px 12px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .tab[aria-selected="true"] {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      color: white;
+    }
+
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .score-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .metric b {
+      display: block;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(390px, 1.05fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      max-height: calc(100vh - 194px);
+      overflow: auto;
+    }
+
+    .panel-inner {
+      padding: 22px;
+    }
+
+    .kicker {
+      margin: 0 0 6px;
+      color: var(--mark);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    h3 {
+      margin: 24px 0 8px;
+      font-size: 18px;
+    }
+
+    p { margin: 0 0 12px; }
+
+    .instruction {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .audio-box {
+      border: 1px dashed #b7c5cc;
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfcfc;
+      margin: 12px 0 18px;
+    }
+
+    .note-box, .options {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfc;
+      padding: 14px;
+      margin: 12px 0;
+    }
+
+    .question-group {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      margin-top: 18px;
+    }
+
+    .question-group:first-child {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .qrow {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 10px;
+      margin: 12px 0;
+      padding: 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      align-items: start;
+    }
+
+    .qrow.correct {
+      border-color: rgba(23, 114, 69, .35);
+      background: rgba(23, 114, 69, .06);
+    }
+
+    .qrow.incorrect {
+      border-color: rgba(179, 38, 30, .35);
+      background: rgba(179, 38, 30, .06);
+    }
+
+    .qnum {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e7ecef;
+      font-weight: 800;
+    }
+
+    .answer {
+      width: min(100%, 230px);
+      min-height: 38px;
+      margin-top: 8px;
+      border: 1px solid #bac5cc;
+      border-radius: 6px;
+      padding: 8px 10px;
+      background: white;
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 7px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .checked .feedback { display: block; }
+    .good { color: var(--good); font-weight: 800; }
+    .wrong { color: var(--bad); font-weight: 800; }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .option-grid li {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 960px) {
+      .topbar-inner, .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .actions { justify-content: stretch; }
+      .actions .btn { flex: 1 1 auto; }
+      .score-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .panel { max-height: none; }
+    }
+
+    @media (max-width: 560px) {
+      main { padding: 12px; }
+      .topbar-inner, .tabs { padding-left: 12px; padding-right: 12px; }
+      .panel-inner { padding: 16px; }
+      h2 { font-size: 23px; }
+      .score-strip, .option-grid { grid-template-columns: 1fr; }
+      .qrow { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>IELTS Listening Practice 001</h1>
+      <div class="timer" id="timer">30:00</div>
+      <div class="actions">
+        <button class="btn" id="startTimer" type="button">Bắt đầu</button>
+        <button class="btn" id="pauseTimer" type="button">Tạm dừng</button>
+        <button class="btn primary" id="checkAnswers" type="button">Chấm bài</button>
+        <button class="btn" id="resetAnswers" type="button">Làm lại</button>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Part tabs">
+      <button class="tab" type="button" data-part="1" aria-selected="true">Part 1</button>
+      <button class="tab" type="button" data-part="2" aria-selected="false">Part 2</button>
+      <button class="tab" type="button" data-part="3" aria-selected="false">Part 3</button>
+      <button class="tab" type="button" data-part="4" aria-selected="false">Part 4</button>
+      <button class="tab" type="button" data-part="all" aria-selected="false">Answer sheet</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="score-strip" aria-label="Score summary">
+      <div class="metric"><b id="scoreTotal">0/40</b><span>Tổng điểm</span></div>
+      <div class="metric"><b id="scoreP1">0/10</b><span>Part 1</span></div>
+      <div class="metric"><b id="scoreP2">0/10</b><span>Part 2</span></div>
+      <div class="metric"><b id="scoreP3">0/10</b><span>Part 3</span></div>
+      <div class="metric"><b id="scoreP4">0/10</b><span>Part 4</span></div>
+    </section>
+
+    <section class="layout part-panel" data-panel="1">
+      <article class="panel">
+        <div class="panel-inner">
+          <p class="kicker">Listening Part 1</p>
+          <h2>Local councils and support for carers</h2>
+          <p class="instruction">Questions 1-10. Complete the table below. Write ONE WORD AND/OR A NUMBER for each answer.</p>
+          <div class="audio-box">
+            <b>Audio</b>
+            <p class="instruction">Bạn có thể thêm file MP3 sau. Hiện trang tập trung vào câu hỏi và answer sheet.</p>
+          </div>
+          <p>Local councils can arrange practical support to help those caring for elderly people at home.</p>
+          <p>This can give the carer:</p>
+          <p>● time for other responsibilities</p>
+          <p>● a <b>1</b> _________</p>
+          <h3>Assessment of mother's needs</h3>
+          <p>This may include discussion of:</p>
+          <p>● how much <b>2</b> _________ the caring involves</p>
+          <p>● what types of tasks are involved, e.g.</p>
+          <p>○ help with dressing</p>
+          <p>○ helping her have a <b>3</b> _________</p>
+          <p>○ shopping</p>
+          <p>○ helping with meals</p>
+          <p>○ dealing with <b>4</b> _________</p>
+          <p>● any aspects of caring that are especially difficult, e.g.</p>
+          <p>○ loss of <b>5</b> _________</p>
+          <p>○ <b>6</b> _________ her</p>
+          <p>○ preventing a <b>7</b> _________</p>
+          <h3>Types of support that may be offered to carers</h3>
+          <p>● transport costs, e.g. cost of a <b>8</b> _________</p>
+          <p>● car-related costs, e.g. fuel and <b>9</b> _________</p>
+          <p>● help with housework</p>
+          <p>● help to reduce <b>10</b> _________</p>
+        </div>
+      </article>
+      <aside class="panel"><div class="panel-inner" id="questions-1"></div></aside>
+    </section>
+
+    <section class="layout part-panel hidden" data-panel="2">
+      <article class="panel">
+        <div class="panel-inner">
+          <p class="kicker">Listening Part 2</p>
+          <h2>Volunteers and community activities</h2>
+          <p class="instruction">Questions 11-20.</p>
+          <div class="audio-box"><b>Audio</b><p class="instruction">Bạn có thể thêm file MP3 sau.</p></div>
+          <h3>Questions 11-16</h3>
+          <p>What is the role of the volunteers in each of the following activities?</p>
+          <p>Choose SIX answers from the box and write the correct letter, A-I, next to 11-16.</p>
+          <div class="options">
+            <ul class="option-grid">
+              <li>A providing entertainment</li>
+              <li>B providing publicity about a council service</li>
+              <li>C contacting local businesses</li>
+              <li>D giving advice to visitors</li>
+              <li>E collecting feedback on events</li>
+              <li>F selling tickets</li>
+              <li>G introducing guest speakers at an event</li>
+              <li>H encouraging cooperation between local organisations</li>
+              <li>I helping people find their seats</li>
+            </ul>
+          </div>
+          <p>11 walking around the town centre</p>
+          <p>12 helping at concerts</p>
+          <p>13 getting involved with community groups</p>
+          <p>14 helping with a magazine</p>
+          <p>15 participating at lunches for retired people</p>
+          <p>16 helping with the website</p>
+          <h3>Questions 17-20</h3>
+          <p>Choose the correct letter, A, B or C.</p>
+          <p>17 Which event requires the largest number of volunteers?</p>
+          <p>A the music festival<br>B the science festival<br>C the book festival</p>
+          <p>18 What is the most important requirement for volunteers at the festivals?</p>
+          <p>A interpersonal skills<br>B personal interest in the event<br>C flexibility</p>
+          <p>19 New volunteers will start working in the week beginning</p>
+          <p>A 2 September.<br>B 9 September.<br>C 23 September.</p>
+          <p>20 What is the next annual event for volunteers?</p>
+          <p>A a boat trip<br>B a barbecue<br>C a party</p>
+        </div>
+      </article>
+      <aside class="panel"><div class="panel-inner" id="questions-2"></div></aside>
+    </section>
+
+    <section class="layout part-panel hidden" data-panel="3">
+      <article class="panel">
+        <div class="panel-inner">
+          <p class="kicker">Listening Part 3</p>
+          <h2>Human geography discussion</h2>
+          <p class="instruction">Questions 21-30.</p>
+          <div class="audio-box"><b>Audio</b><p class="instruction">Bạn có thể thêm file MP3 sau.</p></div>
+          <h3>Questions 21-25</h3>
+          <p>What is Rosie and Colin's opinion about each of the following aspects of human geography?</p>
+          <p>Choose FIVE answers from the box and write the correct letter, A-G, next to Questions 21-25.</p>
+          <div class="options">
+            <ul class="option-grid">
+              <li>A The information given about this was too vague.</li>
+              <li>B This may not be relevant to their course.</li>
+              <li>C This will involve only a small number of statistics.</li>
+              <li>D It will be easy to find facts about this.</li>
+              <li>E The facts about this may not be reliable.</li>
+              <li>F No useful research has been done on this.</li>
+              <li>G The information provided about this was interesting.</li>
+            </ul>
+          </div>
+          <h3>Aspects of human geography</h3>
+          <p>21 Population ______________</p>
+          <p>22 Health ______________</p>
+          <p>23 Economies ______________</p>
+          <p>24 Culture ______________</p>
+          <p>25 Poverty ______________</p>
+          <h3>Questions 26-30</h3>
+          <p>Choose the correct letter, A, B or C.</p>
+          <p>26 Rosie says that in her own city the main problem is</p>
+          <p>A crime.<br>B housing.<br>C unemployment.</p>
+          <p>27 What recent additions to the outskirts of their cities are both students happy about?</p>
+          <p>A conference centres<br>B sports centres<br>C retail centres</p>
+          <p>28 The students agree that developing disused industrial sites may</p>
+          <p>A have unexpected costs.<br>B damage the urban environment.<br>C destroy valuable historical buildings.</p>
+          <p>29 The students will mention Masdar City as an example of an attempt to achieve</p>
+          <p>A daily collections for waste recycling.<br>B sustainable energy use.<br>C free transport for everyone.</p>
+          <p>30 When discussing the ecotown of Greenhill Abbots, Colin is uncertain about</p>
+          <p>A what its objectives were.<br>B why there was opposition to it.<br>C how much of it has actually been built.</p>
+        </div>
+      </article>
+      <aside class="panel"><div class="panel-inner" id="questions-3"></div></aside>
+    </section>
+
+    <section class="layout part-panel hidden" data-panel="4">
+      <article class="panel">
+        <div class="panel-inner">
+          <p class="kicker">Listening Part 4</p>
+          <h2>Developing food trends</h2>
+          <p class="instruction">Questions 31-40. Complete the notes below. Write ONE WORD ONLY for each answer.</p>
+          <div class="audio-box"><b>Audio</b><p class="instruction">Bạn có thể thêm file MP3 sau.</p></div>
+          <p>● The growth in interest in food fashions started with <b>31</b> _________ of food being shared on social media.</p>
+          <p>● The UK food industry is constantly developing products which are new or different.</p>
+          <p>● Influencers on social media become 'ambassadors' for a brand.</p>
+          <p>○ Sales of <b>32</b> _________ food brands have grown rapidly this way.</p>
+          <p>● Supermarkets track demand for ingredients on social media.</p>
+          <p>○ Famous <b>33</b> _________ are influential.</p>
+          <h3>Marketing campaigns</h3>
+          <p>● The avocado:</p>
+          <p>○ <b>34</b> _________ were invited to visit growers in South Africa.</p>
+          <p>○ Advertising focused on its <b>35</b> _________ benefits.</p>
+          <p>● Oat milk:</p>
+          <p>○ A Swedish brand's media campaign received publicity by upsetting competitors.</p>
+          <p>○ Promotion in the USA through <b>36</b> _________ shops reduced the need for advertising.</p>
+          <p>○ It appealed to consumers who are concerned about the <b>37</b> _________</p>
+          <p>● Norwegian skrei:</p>
+          <p>○ has helped strengthen the <b>38</b> _________ of Norwegian seafood.</p>
+          <p>● Ethical concerns</p>
+          <p>● Quinoa:</p>
+          <p>○ Its success led to an increase in its <b>39</b> _________</p>
+          <p>○ Overuse of resources resulted in poor quality <b>40</b> _________</p>
+        </div>
+      </article>
+      <aside class="panel"><div class="panel-inner" id="questions-4"></div></aside>
+    </section>
+
+    <section class="part-panel hidden" data-panel="all">
+      <div class="panel">
+        <div class="panel-inner">
+          <p class="kicker">Answer Sheet</p>
+          <h2>Questions 1-40</h2>
+          <p class="instruction">Điền toàn bộ đáp án ở đây nếu bạn muốn làm như phiếu trả lời.</p>
+          <div id="questions-all"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const answerKey = {};
+
+    const groups = [
+      { part: 1, title: "Questions 1-10", instruction: "Write ONE WORD AND/OR A NUMBER.", type: "text", items: [
+        [1, "This can give the carer a"],
+        [2, "How much ___ the caring involves"],
+        [3, "Helping her have a"],
+        [4, "Dealing with"],
+        [5, "Loss of"],
+        [6, "___ her"],
+        [7, "Preventing a"],
+        [8, "Transport costs, e.g. cost of a"],
+        [9, "Car-related costs, e.g. fuel and"],
+        [10, "Help to reduce"]
+      ]},
+      { part: 2, title: "Questions 11-16", instruction: "Choose SIX answers from A-I.", type: "letters", choices: ["", "A", "B", "C", "D", "E", "F", "G", "H", "I"], items: [
+        [11, "Walking around the town centre"],
+        [12, "Helping at concerts"],
+        [13, "Getting involved with community groups"],
+        [14, "Helping with a magazine"],
+        [15, "Participating at lunches for retired people"],
+        [16, "Helping with the website"]
+      ]},
+      { part: 2, title: "Questions 17-20", instruction: "Choose the correct letter, A, B or C.", type: "letters", choices: ["", "A", "B", "C"], items: [
+        [17, "Which event requires the largest number of volunteers?"],
+        [18, "What is the most important requirement for volunteers at the festivals?"],
+        [19, "New volunteers will start working in the week beginning"],
+        [20, "What is the next annual event for volunteers?"]
+      ]},
+      { part: 3, title: "Questions 21-25", instruction: "Choose FIVE answers from A-G.", type: "letters", choices: ["", "A", "B", "C", "D", "E", "F", "G"], items: [
+        [21, "Population"],
+        [22, "Health"],
+        [23, "Economies"],
+        [24, "Culture"],
+        [25, "Poverty"]
+      ]},
+      { part: 3, title: "Questions 26-30", instruction: "Choose the correct letter, A, B or C.", type: "letters", choices: ["", "A", "B", "C"], items: [
+        [26, "Rosie says that in her own city the main problem is"],
+        [27, "What recent additions to the outskirts of their cities are both students happy about?"],
+        [28, "The students agree that developing disused industrial sites may"],
+        [29, "The students will mention Masdar City as an example of an attempt to achieve"],
+        [30, "When discussing Greenhill Abbots, Colin is uncertain about"]
+      ]},
+      { part: 4, title: "Questions 31-40", instruction: "Write ONE WORD ONLY.", type: "text", items: [
+        [31, "Food fashions started with ___ of food being shared"],
+        [32, "Sales of ___ food brands have grown rapidly"],
+        [33, "Famous ___ are influential"],
+        [34, "The avocado: ___ were invited to visit growers"],
+        [35, "Advertising focused on its ___ benefits"],
+        [36, "Promotion through ___ shops reduced advertising"],
+        [37, "Consumers concerned about the"],
+        [38, "Strengthen the ___ of Norwegian seafood"],
+        [39, "Quinoa success led to an increase in its"],
+        [40, "Overuse of resources resulted in poor quality"]
+      ]}
+    ];
+
+    function normalize(value) {
+      return String(value || "").trim().replace(/\s+/g, " ").toUpperCase();
+    }
+
+    function hasAnswerKey() {
+      return Object.keys(answerKey).length > 0;
+    }
+
+    function isCorrect(q, value) {
+      if (!answerKey[q]) return false;
+      return answerKey[q].map(normalize).includes(normalize(value));
+    }
+
+    function escapeHtml(text) {
+      return String(text).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+    }
+
+    function makeControl(group, q) {
+      const saved = localStorage.getItem(`listening-001-q${q}`) || "";
+      if (group.type === "text") {
+        return `<input class="answer" data-q="${q}" value="${escapeHtml(saved)}" autocomplete="off" />`;
+      }
+      return `<select class="answer" data-q="${q}">
+        ${group.choices.map(choice => `<option value="${choice}" ${normalize(choice) === normalize(saved) ? "selected" : ""}>${choice || "Chọn đáp án"}</option>`).join("")}
+      </select>`;
+    }
+
+    function renderGroup(group) {
+      let html = `<section class="question-group"><h3>${group.title}</h3><p class="instruction">${group.instruction}</p>`;
+      group.items.forEach(([q, text]) => {
+        html += `<div class="qrow" data-row="${q}">
+          <div class="qnum">${q}</div>
+          <div>
+            <div>${text}</div>
+            ${makeControl(group, q)}
+            <div class="feedback"></div>
+          </div>
+        </div>`;
+      });
+      return html + `</section>`;
+    }
+
+    function renderQuestions() {
+      [1, 2, 3, 4].forEach(part => {
+        document.getElementById(`questions-${part}`).innerHTML = groups.filter(group => group.part === part).map(renderGroup).join("");
+      });
+      document.getElementById("questions-all").innerHTML = groups.map(renderGroup).join("");
+      document.querySelectorAll(".answer").forEach(input => {
+        input.addEventListener("input", syncAnswer);
+        input.addEventListener("change", syncAnswer);
+      });
+    }
+
+    function syncAnswer(event) {
+      const q = event.target.dataset.q;
+      const value = event.target.value;
+      localStorage.setItem(`listening-001-q${q}`, value);
+      document.querySelectorAll(`.answer[data-q="${q}"]`).forEach(input => {
+        if (input !== event.target) input.value = value;
+      });
+      document.querySelectorAll(`[data-row="${q}"]`).forEach(row => {
+        row.classList.remove("checked", "correct", "incorrect");
+        row.querySelector(".feedback").innerHTML = "";
+      });
+      updateScores();
+    }
+
+    function checkAnswers() {
+      if (!hasAnswerKey()) {
+        alert("Trang đã sẵn sàng làm bài, nhưng chưa có answer key để chấm tự động. Gửi đáp án 1-40 để mình bật chấm điểm.");
+        return;
+      }
+      for (let q = 1; q <= 40; q++) {
+        const value = localStorage.getItem(`listening-001-q${q}`) || "";
+        const ok = isCorrect(q, value);
+        document.querySelectorAll(`[data-row="${q}"]`).forEach(row => {
+          row.classList.add("checked");
+          row.classList.toggle("correct", ok);
+          row.classList.toggle("incorrect", !ok);
+          row.querySelector(".feedback").innerHTML = ok
+            ? `<span class="good">Đúng.</span>`
+            : `<span class="wrong">Chưa đúng.</span> Đáp án: <span class="good">${answerKey[q].join(" / ")}</span>`;
+        });
+      }
+      updateScores();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function updateScores() {
+      const ranges = { scoreP1: [1, 10], scoreP2: [11, 20], scoreP3: [21, 30], scoreP4: [31, 40] };
+      let total = 0;
+      Object.entries(ranges).forEach(([id, [start, end]]) => {
+        let count = 0;
+        for (let q = start; q <= end; q++) {
+          const value = localStorage.getItem(`listening-001-q${q}`) || "";
+          if (value && isCorrect(q, value)) count++;
+        }
+        total += count;
+        document.getElementById(id).textContent = `${count}/${end - start + 1}`;
+      });
+      document.getElementById("scoreTotal").textContent = `${total}/40`;
+    }
+
+    function resetAnswers() {
+      for (let q = 1; q <= 40; q++) localStorage.removeItem(`listening-001-q${q}`);
+      document.querySelectorAll(".answer").forEach(input => input.value = "");
+      document.querySelectorAll(".qrow").forEach(row => {
+        row.classList.remove("checked", "correct", "incorrect");
+        row.querySelector(".feedback").innerHTML = "";
+      });
+      updateScores();
+    }
+
+    function switchPart(part) {
+      document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab.dataset.part === part)));
+      document.querySelectorAll(".part-panel").forEach(panel => panel.classList.toggle("hidden", panel.dataset.panel !== part));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    let secondsLeft = 30 * 60;
+    let timerId = null;
+
+    function renderTimer() {
+      const minutes = Math.floor(secondsLeft / 60);
+      const seconds = secondsLeft % 60;
+      document.getElementById("timer").textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function startTimer() {
+      if (timerId) return;
+      timerId = setInterval(() => {
+        secondsLeft = Math.max(0, secondsLeft - 1);
+        renderTimer();
+        if (secondsLeft === 0) {
+          clearInterval(timerId);
+          timerId = null;
+          checkAnswers();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerId);
+      timerId = null;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderQuestions();
+      renderTimer();
+      updateScores();
+      document.querySelectorAll(".tab").forEach(tab => tab.addEventListener("click", () => switchPart(tab.dataset.part)));
+      document.getElementById("checkAnswers").addEventListener("click", checkAnswers);
+      document.getElementById("resetAnswers").addEventListener("click", resetAnswers);
+      document.getElementById("startTimer").addEventListener("click", startTimer);
+      document.getElementById("pauseTimer").addEventListener("click", pauseTimer);
+    });
+  </script>
+</body>
+</html>
