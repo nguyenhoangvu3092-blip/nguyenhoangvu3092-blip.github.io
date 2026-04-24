@@ -234,6 +234,13 @@
       box-shadow: inset 0 0 0 1px rgba(148, 98, 0, 0.18);
     }
 
+    .user-highlight {
+      background: #fff1a8;
+      border-radius: 3px;
+      padding: 0 1px;
+      box-shadow: inset 0 0 0 1px rgba(148, 98, 0, 0.15);
+    }
+
     .qrow.highlighted {
       background: #fff1a8;
       border-color: rgba(148, 98, 0, 0.28);
@@ -455,7 +462,7 @@
 
     <section class="passage-shell passage-panel" data-panel="1">
       <article class="reading">
-        <div class="reading-inner">
+        <div class="reading-inner" id="reading-1">
           <p class="kicker">Reading Passage 1</p>
           <h2>Manatees</h2>
           <p class="instruction">You should spend about 20 minutes on Questions 1-13.</p>
@@ -477,7 +484,7 @@
 
     <section class="passage-shell passage-panel hidden" data-panel="2">
       <article class="reading">
-        <div class="reading-inner">
+        <div class="reading-inner" id="reading-2">
           <p class="kicker">Reading Passage 2</p>
           <h2>Procrastination</h2>
           <p class="instruction">A psychologist explains why we put off important tasks and how we can break this habit.</p>
@@ -496,7 +503,7 @@
 
     <section class="passage-shell passage-panel hidden" data-panel="3">
       <article class="reading">
-        <div class="reading-inner">
+        <div class="reading-inner" id="reading-3">
           <p class="kicker">Reading Passage 3</p>
           <h2>Invasion of the Robot Umpires</h2>
           <p class="instruction">You should spend about 20 minutes on Questions 27-40.</p>
@@ -531,6 +538,8 @@
 
   <script>
     const highlightStorageKey = "ielts-reading-highlights-v1";
+    const readingMarkupStorageKey = "ielts-reading-markup-v2";
+    const questionMarkupStorageKey = "ielts-reading-question-markup-v1";
     const answers = {
       1: ["tail"],
       2: ["flippers"],
@@ -826,6 +835,9 @@
       return html + `</section>`;
     }
 
+    let originalReadingMarkup = {};
+    let originalQuestionMarkup = {};
+
     function renderAll() {
       [1, 2, 3].forEach(passage => {
         const target = document.getElementById(`questions-${passage}`);
@@ -856,7 +868,10 @@
         input.addEventListener("change", syncAnswer);
       });
 
+      restoreReadingMarkup();
+      restoreQuestionMarkup();
       setupHighlightables();
+      setupSelectionHighlights();
     }
 
     function getStoredHighlights() {
@@ -878,7 +893,7 @@
     }
 
     function setupHighlightables() {
-      const candidates = document.querySelectorAll(".reading-inner p, .questions-inner .qrow, #questions-all .qrow");
+      const candidates = document.querySelectorAll(".questions-inner .qrow, #questions-all .qrow");
       candidates.forEach((node, index) => {
         node.classList.add("highlightable");
         if (!node.dataset.hid) node.dataset.hid = `hl-${index + 1}`;
@@ -894,9 +909,101 @@
       });
     }
 
+    function saveReadingMarkup() {
+      const state = {};
+      document.querySelectorAll(".reading-inner[id]").forEach(node => {
+        state[node.id] = node.innerHTML;
+      });
+      localStorage.setItem(readingMarkupStorageKey, JSON.stringify(state));
+    }
+
+    function saveQuestionMarkup() {
+      const state = {};
+      document.querySelectorAll(".questions-inner[id], #questions-all").forEach(node => {
+        state[node.id] = node.innerHTML;
+      });
+      localStorage.setItem(questionMarkupStorageKey, JSON.stringify(state));
+    }
+
+    function restoreReadingMarkup() {
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem(readingMarkupStorageKey) || "{}");
+      } catch {
+        saved = {};
+      }
+      Object.entries(originalReadingMarkup).forEach(([id, html]) => {
+        const target = document.getElementById(id);
+        if (!target) return;
+        target.innerHTML = saved[id] || html;
+      });
+    }
+
+    function restoreQuestionMarkup() {
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem(questionMarkupStorageKey) || "{}");
+      } catch {
+        saved = {};
+      }
+      Object.entries(originalQuestionMarkup).forEach(([id, html]) => {
+        const target = document.getElementById(id);
+        if (!target) return;
+        target.innerHTML = saved[id] || html;
+      });
+    }
+
+    function wrapCurrentSelection() {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+      const range = selection.getRangeAt(0);
+      const ancestor = range.commonAncestorContainer.nodeType === 1
+        ? range.commonAncestorContainer
+        : range.commonAncestorContainer.parentElement;
+      const readingRoot = ancestor && ancestor.closest(".reading-inner");
+      const questionRoot = ancestor && ancestor.closest(".questions-inner, #questions-all");
+      const activeRoot = readingRoot || questionRoot;
+      if (!activeRoot) return;
+      const text = selection.toString().trim();
+      if (!text) return;
+
+      const wrapper = document.createElement("span");
+      wrapper.className = "user-highlight";
+      try {
+        const fragment = range.extractContents();
+        wrapper.appendChild(fragment);
+        range.insertNode(wrapper);
+        selection.removeAllRanges();
+        if (readingRoot) saveReadingMarkup();
+        if (questionRoot) saveQuestionMarkup();
+      } catch {
+        selection.removeAllRanges();
+      }
+    }
+
+    function setupSelectionHighlights() {
+      document.querySelectorAll(".reading-inner, .questions-inner, #questions-all").forEach(node => {
+        node.onmouseup = event => {
+          if (event.target.closest("button, input, select")) return;
+          setTimeout(wrapCurrentSelection, 0);
+        };
+      });
+    }
+
     function clearHighlights() {
       document.querySelectorAll(".highlightable.highlighted").forEach(node => node.classList.remove("highlighted"));
       localStorage.removeItem(highlightStorageKey);
+      localStorage.removeItem(readingMarkupStorageKey);
+      localStorage.removeItem(questionMarkupStorageKey);
+      Object.entries(originalReadingMarkup).forEach(([id, html]) => {
+        const target = document.getElementById(id);
+        if (target) target.innerHTML = html;
+      });
+      Object.entries(originalQuestionMarkup).forEach(([id, html]) => {
+        const target = document.getElementById(id);
+        if (target) target.innerHTML = html;
+      });
+      setupSelectionHighlights();
     }
 
     function syncAnswer(event) {
@@ -1010,7 +1117,15 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".reading-inner[id]").forEach(node => {
+        originalReadingMarkup[node.id] = node.innerHTML;
+      });
       renderAll();
+      document.querySelectorAll(".questions-inner[id], #questions-all").forEach(node => {
+        originalQuestionMarkup[node.id] = node.innerHTML;
+      });
+      restoreQuestionMarkup();
+      setupSelectionHighlights();
       updateScores(false);
       renderTimer();
       document.querySelectorAll(".tab").forEach(tab => {
