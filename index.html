@@ -218,32 +218,11 @@
       text-align: justify;
     }
 
-    .highlightable {
-      cursor: pointer;
-      transition: background-color .16s ease, box-shadow .16s ease;
-    }
-
-    .highlightable:hover {
-      background: rgba(240, 196, 25, 0.08);
-      border-radius: 6px;
-    }
-
-    .highlighted {
-      background: #fff1a8;
-      border-radius: 6px;
-      box-shadow: inset 0 0 0 1px rgba(148, 98, 0, 0.18);
-    }
-
     .user-highlight {
       background: #fff1a8;
       border-radius: 3px;
       padding: 0 1px;
       box-shadow: inset 0 0 0 1px rgba(148, 98, 0, 0.15);
-    }
-
-    .qrow.highlighted {
-      background: #fff1a8;
-      border-color: rgba(148, 98, 0, 0.28);
     }
 
     .paragraph-label {
@@ -537,7 +516,6 @@
   </main>
 
   <script>
-    const highlightStorageKey = "ielts-reading-highlights-v1";
     const readingMarkupStorageKey = "ielts-reading-markup-v2";
     const questionMarkupStorageKey = "ielts-reading-question-markup-v1";
     const answers = {
@@ -838,6 +816,13 @@
     let originalReadingMarkup = {};
     let originalQuestionMarkup = {};
 
+    function bindAnswerInputs() {
+      document.querySelectorAll(".answer").forEach(input => {
+        input.addEventListener("input", syncAnswer);
+        input.addEventListener("change", syncAnswer);
+      });
+    }
+
     function renderAll() {
       [1, 2, 3].forEach(passage => {
         const target = document.getElementById(`questions-${passage}`);
@@ -863,50 +848,10 @@
         </div>`;
       }).join("");
 
-      document.querySelectorAll(".answer").forEach(input => {
-        input.addEventListener("input", syncAnswer);
-        input.addEventListener("change", syncAnswer);
-      });
-
+      bindAnswerInputs();
       restoreReadingMarkup();
       restoreQuestionMarkup();
-      setupHighlightables();
       setupSelectionHighlights();
-    }
-
-    function getStoredHighlights() {
-      try {
-        return JSON.parse(localStorage.getItem(highlightStorageKey) || "[]");
-      } catch {
-        return [];
-      }
-    }
-
-    function saveHighlights() {
-      const ids = Array.from(document.querySelectorAll(".highlightable.highlighted")).map(node => node.dataset.hid);
-      localStorage.setItem(highlightStorageKey, JSON.stringify(ids));
-    }
-
-    function toggleHighlight(node) {
-      node.classList.toggle("highlighted");
-      saveHighlights();
-    }
-
-    function setupHighlightables() {
-      const candidates = document.querySelectorAll(".questions-inner .qrow, #questions-all .qrow");
-      candidates.forEach((node, index) => {
-        node.classList.add("highlightable");
-        if (!node.dataset.hid) node.dataset.hid = `hl-${index + 1}`;
-        node.onclick = event => {
-          if (event.target.closest("input, select, option, button")) return;
-          toggleHighlight(node);
-        };
-      });
-
-      const stored = new Set(getStoredHighlights());
-      document.querySelectorAll(".highlightable").forEach(node => {
-        node.classList.toggle("highlighted", stored.has(node.dataset.hid));
-      });
     }
 
     function saveReadingMarkup() {
@@ -991,8 +936,6 @@
     }
 
     function clearHighlights() {
-      document.querySelectorAll(".highlightable.highlighted").forEach(node => node.classList.remove("highlighted"));
-      localStorage.removeItem(highlightStorageKey);
       localStorage.removeItem(readingMarkupStorageKey);
       localStorage.removeItem(questionMarkupStorageKey);
       Object.entries(originalReadingMarkup).forEach(([id, html]) => {
@@ -1003,6 +946,7 @@
         const target = document.getElementById(id);
         if (target) target.innerHTML = html;
       });
+      bindAnswerInputs();
       setupSelectionHighlights();
     }
 
